@@ -9,13 +9,10 @@ import liquibase.exception.PreconditionFailedException;
 import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
 import liquibase.ext.mongodb.database.MongoLiquibaseDatabase;
-import liquibase.ext.mongodb.statement.BsonUtils;
 import liquibase.ext.mongodb.statement.CountCollectionByNameStatement;
-import liquibase.ext.mongodb.statement.CountDocumentsInCollectionStatement;
 import liquibase.precondition.AbstractPrecondition;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.conversions.Bson;
 
 import static java.lang.String.format;
 
@@ -42,14 +39,16 @@ public class CollectionExistsPrecondition extends AbstractPrecondition {
 
     @Override
     public void check(final Database database, final DatabaseChangeLog changeLog, final ChangeSet changeSet,
-                      final ChangeExecListener changeExecListener) throws PreconditionFailedException, PreconditionErrorException {
+                      final ChangeExecListener changeExecListener)
+        throws PreconditionFailedException, PreconditionErrorException {
 
         try {
-            final CountCollectionByNameStatement countCollectionByNameStatement = new CountCollectionByNameStatement(collectionName);
+            final CountCollectionByNameStatement countCollectionByNameStatement = new CountCollectionByNameStatement(
+                collectionName);
 
             if (countCollectionByNameStatement.queryForLong((MongoLiquibaseDatabase) database) == 0L) {
-                throw new PreconditionFailedException(format(
-                        "Collection %s does not exist", collectionName), changeLog, this);
+                throw new PreconditionFailedException(format("Collection %s does not exist", collectionName), changeLog,
+                                                      this);
 
             }
         } catch (final PreconditionFailedException e) {
